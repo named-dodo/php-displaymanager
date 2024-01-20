@@ -5,8 +5,7 @@ function framebuffer_open($file){
 		return false;
 	}
 
-	$dimension_string=file_get_contents(
-		"/sys/class/graphics/".substr($file, strrpos($file, '/')+1)."/virtual_size");
+	$dimension_string=file_get_contents("/sys/class/graphics/".substr($file, strrpos($file, '/')+1)."/virtual_size");
 	if(! $dimension_string ){
 		return false;
 	}

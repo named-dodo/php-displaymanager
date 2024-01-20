@@ -17,7 +17,6 @@ A display manager (+window manager) inside PHP.
 5. Navigate to the folder containing this README.
 6. Adjust the resolution in `displaymanager.php` accordingly.
 7. Run ./start.sh (You can abort by pressing the scroll wheel.)
-Disclaimer: Using this software is AT YOUR OWN RISK!
 
 
 ## Rules
@@ -32,8 +31,8 @@ Disclaimer: Using this software is AT YOUR OWN RISK!
 * [ ] Clean up and restructure the source code.
 * [ ] Finish the X11 protocol implementation.
 * [ ] Optimize rendering system.
-* [ ] Multi-monitor support.
-* [ ] Auto resolution recognision.
+* [ ] ~~Multi-monitor support.~~ (There's only fb0?)
+* [x] Automatic resolution recognision.
 * [ ] Embedded terminal program.
 * [ ] Flashbang mode (invert colors)
 * [ ] Wayland server support?
