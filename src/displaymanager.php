@@ -14,6 +14,7 @@ $vendor_name="The X11.PHP Project.";
 ini_set('memory_limit', 1024*2 .'M'); // increase memory max to 2G
 
 /* Start loading everything */
+include 'tty.php';
 include 'utils.php';
 include 'dodofont.php';
 include 'cursordata.php';
