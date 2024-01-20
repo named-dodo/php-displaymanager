@@ -1,12 +1,6 @@
 <?php /* Entrypoint of the PHP displaymanager. */
 
-/* Do not forget to adjust these settings below... */
-$maxw = 1920 ; // <-- Set the width  of your monitor in pixels here.
-$maxh = 1080 ; // <-- Set the heigth of your monitor in pixels here.
 
-
-
-$framebuffer = "/dev/fb0" ; // <-- the framebuffer device for your monitor.
 $micedevicename="/dev/input/mice"; // <-- the input device for your mouse or mice.
 $X11SocketAddress="127.0.0.1:6001"; // <-- the TCP port to listen for incoming X11 connections.
 $vendor_name="The X11.PHP Project.";
@@ -28,7 +22,10 @@ include 'X11server.php';
 
 
 disable_terminal();
-$bg=createFrameBuffer( color(10,10,20));
+$framebuffer=framebuffer_open("/dev/fb0"); // there is no fb1, even when you have multiple monitors... :(
+$maxw=$framebuffer['w'];
+$maxh=$framebuffer['h'];
+
 $mice = openMouse($maxw, $maxh, $micedevicename);
 
 // TODO disabled incomplete Xorg server implementation
@@ -56,7 +53,7 @@ while(!isButtonPressed($mice,3)){
 //	if(!isset($sock) || !$sock) $sock=X11_accept($x11s);
 //	if(isset($sock) && $sock) X11_read($sock);
 
-	$buff=$bg;
+	$buff=createImage($framebuffer['w'], $framebuffer['h'], color(10,10,20));
 
 	// start button and taskbar
 	$taskbar_h=25;
@@ -184,7 +181,7 @@ while(!isButtonPressed($mice,3)){
 	drawWindowsInfo($buff);
 	drawString($buff, 10, 10, 15, 40, color(250,25,250) , "".(microtime(true)-$time) );
 
-	blit($buff);
+	framebuffer_blit($framebuffer, $buff);
 }
 
 // --- RESTORE TERMINAL TO SAFE DEFAULTS ---
