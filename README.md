@@ -15,8 +15,7 @@ A display manager (+window manager) inside PHP.
 3. Get a copy of this code on your disk.
 4. Go to the first TTY and log in. (Control+Alt+F1)
 5. Navigate to the folder containing this README.
-6. Adjust the resolution in `displaymanager.php` accordingly.
-7. Run ./start.sh (You can abort by pressing the scroll wheel.)
+6. Run ./start.sh (You can abort by pressing the scroll wheel.)
 
 
 ## Rules
@@ -31,7 +30,7 @@ A display manager (+window manager) inside PHP.
 * [ ] Clean up and restructure the source code.
 * [ ] Finish the X11 protocol implementation.
 * [ ] Optimize rendering system.
-* [ ] ~~Multi-monitor support.~~ (There's only fb0?)
+* [ ] Multi-monitor support.
 * [x] Automatic resolution recognision.
 * [ ] Embedded terminal program.
 * [ ] Flashbang mode (invert colors)

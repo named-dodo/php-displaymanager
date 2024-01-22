@@ -22,9 +22,20 @@ include 'X11server.php';
 
 
 disable_terminal();
-$framebuffer=framebuffer_open("/dev/fb0"); // there is no fb1, even when you have multiple monitors... :(
+
+// Getting fb1 working requires:
+// - Having multiple graphic cards. (integrated one also counts)
+// - Having a display connected to both card outputs.
+// - In the BIOS/UEFI, keep the integrated GPU (output) always on.
+// - X11/Wayland/distro needs to surrender control of both monitors when switching to TTY1.
+//   - Disable in display settings the monitor that doesn't blank or show the TTY.
+//   - Write a 0 to /sys/class/graphics/fb1/blank (each time after swithing from X11 to TTY)
+$framebuffer=framebuffer_open("/dev/fb0");
+
 $maxw=$framebuffer['w'];
 $maxh=$framebuffer['h'];
+// You can VNC virtual framebuffers with: "x11vnc -rawfb map:/dev/fb1@1024x720x32"
+
 
 $mice = openMouse($maxw, $maxh, $micedevicename);
 
@@ -53,7 +64,7 @@ while(!isButtonPressed($mice,3)){
 //	if(!isset($sock) || !$sock) $sock=X11_accept($x11s);
 //	if(isset($sock) && $sock) X11_read($sock);
 
-	$buff=createImage($framebuffer['w'], $framebuffer['h'], color(10,10,20));
+	$buff=createImage($maxw, $maxh, color(10,10,20));
 
 	// start button and taskbar
 	$taskbar_h=25;
