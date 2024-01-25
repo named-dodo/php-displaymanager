@@ -21,7 +21,7 @@ include 'windowlist.php';
 include 'X11server.php';
 
 
-disable_terminal();
+tty_disable();
 
 // Getting fb1 working requires:
 // - Having multiple graphic cards. (integrated one also counts)
@@ -208,5 +208,6 @@ while(!isButtonPressed($mice,3)){
 
 // --- RESTORE TERMINAL TO SAFE DEFAULTS ---
 while( isButtonPressed($mice,3) ) readMouseInput($mice);
-enable_terminal();
+tty_enable();
+tty_flush();
 ?>
