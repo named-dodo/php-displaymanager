@@ -195,7 +195,7 @@ function drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 function drawString(&$img, $x, $y, $h, $mw, $color ,$text){
 	$xoff=0;
 	foreach(str_split(strtolower($text)) as $char){
-		$lines=getCharData($char);
+		$lines=dodofont_getCharLines($char);
 
 		foreach($lines as $line){
 			$x1=intval(round($line[0]*$h/2));

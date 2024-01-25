@@ -1,6 +1,6 @@
 <?php /* Scalable Line Font "dodofont" for the PHP displaymanager. */
 
-function getCharData($char){
+function dodofont_getCharLines($char){
 	switch($char){
 		case 'a': return [[0.07,1.78,0.48,0.2],[0.48,0.2,0.87,1.76],[0.27,1,0.69,1.01]];
 		case 'b': return [[0.13,0.15,0.14,1.83],[0.13,1.07,0.81,1.17],[0.81,1.17,0.79,1.73],[0.79,1.73,0.16,1.81]];
