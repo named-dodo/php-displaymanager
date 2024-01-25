@@ -40,7 +40,7 @@ $maxh=$framebuffer['h'];
 $keyboard_file=kbd_find();
 $kbd=kbd_open($keyboard_file);
 
-$mice = openMouse($maxw, $maxh, $micedevicename);
+$mice = mouse_open($maxw, $maxh, $micedevicename);
 
 // TODO disabled incomplete Xorg server implementation
 //$x11s = X11_init($X11SocketAddress);
@@ -57,11 +57,11 @@ addWindow( Wcreate(400, 300, 150, 150, "Another Window") );
 
 
 
-while(!isButtonPressed($mice,3)){
+while(!mouse_isPressed($mice,3)){
 	$time = microtime(true);
 	usleep(0.01 *1000000);
 
-	readMouseInput($mice);
+	mouse_read($mice);
 
 // TODO disabled incomplete Xorg server implementation
 //	if(!isset($sock) || !$sock) $sock=X11_accept($x11s);
@@ -82,8 +82,8 @@ while(!isButtonPressed($mice,3)){
 	unset($window);
 
 	if($moving){
-		$moving['window']["x"]=getMouseX($mice)+$moving['xoff'];
-		$moving['window']["y"]=getMouseY($mice)+$moving['yoff'];
+		$moving['window']["x"]=mouse_getX($mice)+$moving['xoff'];
+		$moving['window']["y"]=mouse_getY($mice)+$moving['yoff'];
 	}
 
 
@@ -96,16 +96,16 @@ while(!isButtonPressed($mice,3)){
 		$wh=WgetH($win);
 
 		if($resizing['movement']['x']){
-			$wx=getMouseX($mice)-$resizing['xoff'];
-			$ww=$resizing['wa']-getMouseX($mice);
+			$wx=mouse_getX($mice)-$resizing['xoff'];
+			$ww=$resizing['wa']-mouse_getX($mice);
 		} else if($resizing['movement']['w'])
-			$ww=getMouseX($mice)+$resizing['woff'];
+			$ww=mouse_getX($mice)+$resizing['woff'];
 
 		if($resizing['movement']['y']){
-			$wy=getMouseY($mice)-$resizing['yoff'];
-			$wh=$resizing['ha']-getMouseY($mice);
+			$wy=mouse_getY($mice)-$resizing['yoff'];
+			$wh=$resizing['ha']-mouse_getY($mice);
 		} else if($resizing['movement']['h'])
-			$wh=getMouseY($mice)+$resizing['hoff'];
+			$wh=mouse_getY($mice)+$resizing['hoff'];
 
 		WsetPosition($win, $wx, $wy);
 		WsetSize($win, $ww, $wh);
@@ -113,7 +113,7 @@ while(!isButtonPressed($mice,3)){
 	}
 
 	// pullClick returns an array("x"=>$mousex, "y"=>$mousey, "button"=>1, "press"=>$button1) or null
-	while( $click = pullClick($mice) ){
+	while( $click = mouse_pullClick($mice) ){
 		if($click["button"]!=1) continue; //ignore left and middle click for now.
 		
 		if($moving and !$click['press']){ // stopped moving?
@@ -180,7 +180,7 @@ while(!isButtonPressed($mice,3)){
 	$iter=createIterator(true);
 	while( $window=&nextWindow($iter) ){
 
-		$result=Whover($window, getMouseX($mice), getMouseY($mice) );
+		$result=Whover($window, mouse_getX($mice), mouse_getY($mice) );
 
 		if($result==-1)	continue;
 		$cursor=$result;
@@ -197,17 +197,18 @@ while(!isButtonPressed($mice,3)){
 
 
 	// draw mouse
-	$mcolor= ( (isButtonPressed($mice,1)) ? color(200,200,255) : color(100,100,255) );
-	drawCursor($buff, getMouseX($mice), getMouseY($mice), $mcolor, $cursor);
+	$mcolor= ( (mouse_isPressed($mice,1)) ? color(200,200,255) : color(100,100,255) );
+	drawCursor($buff, mouse_getX($mice), mouse_getY($mice), $mcolor, $cursor);
 
 	drawWindowsInfo($buff);
 	drawString($buff, 10, 10, 15, 40, color(250,25,250) , "".(microtime(true)-$time) );
+	drawString($buff, 80, 10, 15, 400, color(250,25,250) , "Click the scroll wheel to exit." );
 
 	framebuffer_blit($framebuffer, $buff);
 }
 
 // --- RESTORE TERMINAL TO SAFE DEFAULTS ---
-while( isButtonPressed($mice,3) ) readMouseInput($mice);
+while( mouse_isPressed($mice,3) ) mouse_read($mice);
 tty_enable();
 tty_flush();
 ?>
