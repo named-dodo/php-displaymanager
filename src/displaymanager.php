@@ -37,6 +37,9 @@ $maxh=$framebuffer['h'];
 // You can VNC virtual framebuffers with: "x11vnc -rawfb map:/dev/fb1@1024x720x32"
 
 
+$keyboard_file=kbd_find();
+$kbd=kbd_open($keyboard_file);
+
 $mice = openMouse($maxw, $maxh, $micedevicename);
 
 // TODO disabled incomplete Xorg server implementation
@@ -184,6 +187,14 @@ while(!isButtonPressed($mice,3)){
 		break;
 	}
 	unset($window);
+
+	// testing the keyboard.
+	while(kbd_read($kbd)); // skip all key presses first. if you want to handle input, do something with those.
+	if( kbd_isPressed($kbd, kbd_getID("LEFTSHIFT")) )
+			drawString($buff, 10, 100, 15, 400, color(250,25,250) , "You have pressed the left-shift key" );
+	if( kbd_isPressed($kbd, kbd_getID("RIGHTSHIFT")) )
+			drawString($buff, 10, 115, 15, 400, color(250,25,250) , "You have pressed the right-shift key" );
+
 
 	// draw mouse
 	$mcolor= ( (isButtonPressed($mice,1)) ? color(200,200,255) : color(100,100,255) );
