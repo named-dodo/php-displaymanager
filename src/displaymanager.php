@@ -169,7 +169,7 @@ while(!mouse_isPressed($mice,3)){
 
 		// start button pressed.
 		if($click['press'] and $mx<25 and $my+25>$maxh){
-			addWindow( Wcreate(rand(10,1200), rand(10,800), rand(50,900), rand(30,800), "Another Window") );
+			addWindow( Wcreate(rand(10,1200), rand(10,800), rand(50,900), rand(30,800), "Another Window ".rand(1000,9999) ) );
 		}
 
 	}

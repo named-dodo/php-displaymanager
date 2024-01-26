@@ -21,7 +21,7 @@ function WgetH(&$w){ return $w['h']; }
 function WsetSize(&$w,$nw,$nh){
 	if($nw<40) $nw=40;
 	if($nh<22) $nh=22;
-	img_resize($w['buffer'],$nw-2,$nh-22);
+	img_resize($w['buffer'],$nw-2,$nh-22, $w['color']);
 	$w['w']=$nw; $w['h']=$nh;
 }
 
@@ -90,7 +90,8 @@ function Wclick(&$w,&$click){
 		// clicked inside application?
 		if( $mx>$wx and $mx<$wx+$ww and $my>=$wy+20 and $my<$wy+$wh ){
 			if($click['press']) // TODO pass keypress to application
-				img_clear( $w['buffer'] , rgb(random_int(0,255),random_int(0,255),random_int(0,255)) );
+				$w['color']=rgb(random_int(0,255),random_int(0,255),random_int(0,255));
+				img_clear( $w['buffer'] , $w['color'] );
 			return 0;
 		}
 

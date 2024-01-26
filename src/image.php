@@ -3,6 +3,8 @@
 // rgba format for images. (Note: alpha doesn't seem to work?)
 function rgb($r, $g, $b, $a=0){	return chr($b).chr($g).chr($r).chr($a);}
 
+define("IMG_DEFAULT_COLOR", rgb(250,0,250) );
+
 
 // create an image with $color for background.
 function img_create($w, $h, $color){
@@ -20,7 +22,7 @@ function img_clear(&$img, $color){
 }
 
 
-function img_setPixel(&$img, $x, $y, $color){
+function img_setPixel(&$img, int $x, int $y, $color){
 	$d=&$img['d'];
 	$ptr=4*($x+$y*$img['w']);
 	$d[$ptr+0]=$color[0];
@@ -30,7 +32,7 @@ function img_setPixel(&$img, $x, $y, $color){
 }
 
 // fill a selected area with color
-function img_fill(&$img, $x1, $y1, $x2, $y2, $color){
+function img_fill(&$img, int $x1, int $y1, int $x2, int $y2, $color){
 	$buff=&$img['d'];
 	$maxw=$img['w'];
 	$maxh=$img['h'];
@@ -58,7 +60,7 @@ function img_fill(&$img, $x1, $y1, $x2, $y2, $color){
 }
 
 // resize horizontally
-function img_resize_w(&$img, $nw){
+function img_resize_w(&$img, int $nw, $color=IMG_DEFAULT_COLOR ){
 	$ow=&$img['w'];
 
 	if($ow==$nw) return;
@@ -70,7 +72,7 @@ function img_resize_w(&$img, $nw){
 		foreach($lines as $line)
 			$nb.=substr($line,0,$l);
 	}else{
-		$l=str_repeat(rgb(250,0,250) , $nw-$ow);
+		$l=str_repeat($color, $nw-$ow);
 		foreach($lines as $line)
 			$nb.=$line.$l;
 
@@ -80,36 +82,36 @@ function img_resize_w(&$img, $nw){
 }
 
 // resize vertically
-function img_resize_h(&$img, $nh){
+function img_resize_h(&$img, int $nh, $color=IMG_DEFAULT_COLOR ){
 	$oh=$img['h'];
 	if($oh==$nh) return;
 	if($nh<$oh)
 		$img['d']=substr($img['d'],0,4*$img['w']*$nh);
 	else
-		$img['d']=$img['d'] . str_repeat(rgb(250,0,250) , $img['w']*($nh-$oh) );
+		$img['d']=$img['d'] . str_repeat($color , $img['w']*($nh-$oh) );
 	$img['h']=$nh;
 }
 
 // resize image
-function img_resize(&$img, $nw, $nh){
+function img_resize(&$img, int $nw, int $nh, $color=IMG_DEFAULT_COLOR){
 	$ow=$img['w'];
 	$oh=$img['h'];
 	if( ($nw==$ow && $nh==$oh)||$nw<0||$nh<0 ) return;
 
-	if($nw==$ow){ img_resize_h($img,$nh); return; }
-	if($nh==$oh){ img_resize_w($img,$nw); return; }
+	if($nw==$ow){ img_resize_h($img,$nh, $color); return; }
+	if($nh==$oh){ img_resize_w($img,$nw, $color); return; }
 
 	if($nh>$oh){
-		img_resize_w($img,$nw);
-		img_resize_h($img,$nh);
+		img_resize_w($img,$nw, $color);
+		img_resize_h($img,$nh, $color);
 	}else{
-		img_resize_h($img,$nh);
-		img_resize_w($img,$nw);
+		img_resize_h($img,$nh, $color);
+		img_resize_w($img,$nw, $color);
 	}
 }
 
 // fully draw an src image onto a dest image.
-function img_paint(&$dest, $x, $y, &$src){
+function img_paint(&$dest, int $x, int $y, &$src){
 	$dout=&$dest['d'];
 	$din =&$src['d'];
 
@@ -117,6 +119,7 @@ function img_paint(&$dest, $x, $y, &$src){
 	$dh=$dest['h'];
 	$sw=$src['w'];
 	$sh=$src['h'];
+	if($sh<1 or $sw <1){ return; }
 
 	for($i=0;$i<$sh;$i++){
 		if($i+$y<0) continue;
@@ -137,30 +140,34 @@ function img_paint(&$dest, $x, $y, &$src){
 	}
 }
 
-function img_drawhline(&$img, $y, $x1, $x2, $color){
+function img_drawhline(&$img, int $y, int $x1, int $x2, $color){
 	$maxw=$img['w'];
 	$maxh=$img['h'];
 
-	if($x1>$x2){ $z=$x1; $x1=$x2; $x2=$z; }
-
-	if($x1<0) $x1=0;
-	if($x2>=$maxw) $x2=$maxw-1;
 	if($y<0 or $y>=$maxh) return;
+
+	if($x1>$x2){ $z=$x1; $x1=$x2; $x2=$z; }
+	if($x1<0) $x1=0;
+	if($x1>=$maxw) return;
+	if($x2>=$maxw) $x2=$maxw-1;
+	if($x2<0) return;
 
 	for($x=$x1;$x<=$x2;$x++){
 		img_setPixel($img, $x,$y,$color);
 	}
 }
 
-function img_drawvline(&$img, $x, $y1, $y2, $color){
+function img_drawvline(&$img, int $x, int $y1, int $y2, $color){
 	$maxw=$img['w'];
 	$maxh=$img['h'];
 
-	if($y1>$y2){ $z=$y1; $y1=$y2; $y2=$z; }
-
 	if($x<0 or $x>=$maxw) return;
+
+	if($y1>$y2){ $z=$y1; $y1=$y2; $y2=$z; }
 	if($y1<0) $y1=0;
+	if($y1>=$maxh) return;
 	if($y2>=$maxh) $y2=$maxh-1;
+	if($y2<0) return;
 
 	for($y=$y1;$y<=$y2;$y++){
 		img_setPixel($img, $x,$y,$color);
@@ -174,6 +181,15 @@ function img_drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 
 	$rx=$x2-$x1;
 	$ry=$y2-$y1;
+
+	if($rx==0){
+		img_drawvline($img, (int)$x1, (int)$y1, (int)$y2, $color);
+		return;
+	}
+	if($ry==0){
+		img_drawhline($img, (int)$y1, (int)$x1, (int)$x2, $color);
+		return;
+	}
 
 	$steps=sqrt( ($rx*$rx) + ($ry*$ry) );
 	if($steps<1){
