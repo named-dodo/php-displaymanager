@@ -1,26 +1,26 @@
 <?php /* image manipulation functions */
 
 // rgba format for images. (Note: alpha doesn't seem to work?)
-function color($r, $g, $b, $a=0){	return chr($b).chr($g).chr($r).chr($a);}
+function rgb($r, $g, $b, $a=0){	return chr($b).chr($g).chr($r).chr($a);}
 
 
 // create an image with $color for background.
-function createImage($w, $h, $color){
+function img_create($w, $h, $color){
 	return array( 'w'=>$w, 'h'=>$h, 'd'=>str_repeat($color, $w*$h) );
 }
 
-function getW(&$img){ return $img['w']; }
-function getH(&$img){ return $img['h']; }
-function &getD(&$img){ return $img['d']; }
-function copyD(&$img){ return $img['d']; }
+function img_getW(&$img){ return $img['w']; }
+function img_getH(&$img){ return $img['h']; }
+function &img_getD(&$img){ return $img['d']; }
+function img_copyD(&$img){ return $img['d']; }
 
 
-function clear(&$img, $color){
+function img_clear(&$img, $color){
 	$img['d']=str_repeat($color , $img['w']*$img['h'] );
 }
 
 
-function setpixel(&$img, $x, $y, $color){
+function img_setPixel(&$img, $x, $y, $color){
 	$d=&$img['d'];
 	$ptr=4*($x+$y*$img['w']);
 	$d[$ptr+0]=$color[0];
@@ -30,7 +30,7 @@ function setpixel(&$img, $x, $y, $color){
 }
 
 // fill a selected area with color
-function fill(&$img, $x1, $y1, $x2, $y2, $color){
+function img_fill(&$img, $x1, $y1, $x2, $y2, $color){
 	$buff=&$img['d'];
 	$maxw=$img['w'];
 	$maxh=$img['h'];
@@ -57,7 +57,8 @@ function fill(&$img, $x1, $y1, $x2, $y2, $color){
 	}
 }
 
-function resize_w(&$img, $nw){
+// resize horizontally
+function img_resize_w(&$img, $nw){
 	$ow=&$img['w'];
 
 	if($ow==$nw) return;
@@ -69,7 +70,7 @@ function resize_w(&$img, $nw){
 		foreach($lines as $line)
 			$nb.=substr($line,0,$l);
 	}else{
-		$l=str_repeat(color(250,0,250) , $nw-$ow);
+		$l=str_repeat(rgb(250,0,250) , $nw-$ow);
 		foreach($lines as $line)
 			$nb.=$line.$l;
 
@@ -78,36 +79,37 @@ function resize_w(&$img, $nw){
 	$img['w']=$nw;
 }
 
-function resize_h(&$img, $nh){
+// resize vertically
+function img_resize_h(&$img, $nh){
 	$oh=$img['h'];
 	if($oh==$nh) return;
 	if($nh<$oh)
 		$img['d']=substr($img['d'],0,4*$img['w']*$nh);
 	else
-		$img['d']=$img['d'] . str_repeat(color(250,0,250) , $img['w']*($nh-$oh) );
+		$img['d']=$img['d'] . str_repeat(rgb(250,0,250) , $img['w']*($nh-$oh) );
 	$img['h']=$nh;
 }
 
-
-function resize(&$img, $nw, $nh){
+// resize image
+function img_resize(&$img, $nw, $nh){
 	$ow=$img['w'];
 	$oh=$img['h'];
 	if( ($nw==$ow && $nh==$oh)||$nw<0||$nh<0 ) return;
 
-	if($nw==$ow){ resize_h($img,$nh); return; }
-	if($nh==$oh){ resize_w($img,$nw); return; }
+	if($nw==$ow){ img_resize_h($img,$nh); return; }
+	if($nh==$oh){ img_resize_w($img,$nw); return; }
 
 	if($nh>$oh){
-		resize_w($img,$nw);
-		resize_h($img,$nh);
+		img_resize_w($img,$nw);
+		img_resize_h($img,$nh);
 	}else{
-		resize_h($img,$nh);
-		resize_w($img,$nw);
+		img_resize_h($img,$nh);
+		img_resize_w($img,$nw);
 	}
 }
 
-
-function paint(&$dest, $x, $y, &$src){
+// fully draw an src image onto a dest image.
+function img_paint(&$dest, $x, $y, &$src){
 	$dout=&$dest['d'];
 	$din =&$src['d'];
 
@@ -135,7 +137,7 @@ function paint(&$dest, $x, $y, &$src){
 	}
 }
 
-function drawhline(&$img, $y, $x1, $x2, $color){
+function img_drawhline(&$img, $y, $x1, $x2, $color){
 	$maxw=$img['w'];
 	$maxh=$img['h'];
 
@@ -146,11 +148,11 @@ function drawhline(&$img, $y, $x1, $x2, $color){
 	if($y<0 or $y>=$maxh) return;
 
 	for($x=$x1;$x<=$x2;$x++){
-		setpixel($img, $x,$y,$color);
+		img_setPixel($img, $x,$y,$color);
 	}
 }
 
-function drawvline(&$img, $x, $y1, $y2, $color){
+function img_drawvline(&$img, $x, $y1, $y2, $color){
 	$maxw=$img['w'];
 	$maxh=$img['h'];
 
@@ -161,12 +163,12 @@ function drawvline(&$img, $x, $y1, $y2, $color){
 	if($y2>=$maxh) $y2=$maxh-1;
 
 	for($y=$y1;$y<=$y2;$y++){
-		setpixel($img, $x,$y,$color);
+		img_setPixel($img, $x,$y,$color);
 	}
 }
 
 // draw a line between point 1 and 2.
-function drawLine(&$img, $x1, $y1, $x2, $y2, $color){
+function img_drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 	$maxw=$img['w'];
 	$maxh=$img['h'];
 
@@ -176,7 +178,7 @@ function drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 	$steps=sqrt( ($rx*$rx) + ($ry*$ry) );
 	if($steps<1){
 		if($x1>=0 && $x1<$maxw && $y1>=0 && $y1<$maxh )
-			setpixel($img, $x1, $y1, $color);
+			img_setPixel($img, $x1, $y1, $color);
 		return;
 	}
 	$rx/=$steps;
@@ -187,12 +189,12 @@ function drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 		$y=intval(round($y1+ $ry*$i));
 
 		if($x>=0 && $x<$maxw && $y>=0 && $y<$maxh )
-			setpixel($img, $x, $y, $color);
+			img_setPixel($img, $x, $y, $color);
 	}
 }
 
 // draw string at x y with h height and mw as max width.
-function drawString(&$img, $x, $y, $h, $mw, $color ,$text){
+function img_drawString(&$img, $x, $y, $h, $mw, $color ,$text){
 	$xoff=0;
 	foreach(str_split(strtolower($text)) as $char){
 		$lines=dodofont_getCharLines($char);
@@ -203,7 +205,7 @@ function drawString(&$img, $x, $y, $h, $mw, $color ,$text){
 			$x2=intval(round($line[2]*$h/2));
 			$y2=intval(round($line[3]*$h/2));
 
-			drawLine($img, $x+$xoff+$x1, $y+$y1, $x+$xoff+$x2, $y+$y2, $color);
+			img_drawLine($img, $x+$xoff+$x1, $y+$y1, $x+$xoff+$x2, $y+$y2, $color);
 		}
 
 		$xoff+=$h/2+2;
@@ -213,7 +215,7 @@ function drawString(&$img, $x, $y, $h, $mw, $color ,$text){
 
 // draw cursor at x y
 //cursor= 0 if normal, 1 if clickable, 2 if grabbable, resize: 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
-function drawCursor(&$img, $x, $y, $color ,$cursor){
+function img_drawCursor(&$img, $x, $y, $color ,$cursor){
 	$lines=getCursorData($cursor);
 	$size=5;
 	foreach($lines as $line){
@@ -222,7 +224,7 @@ function drawCursor(&$img, $x, $y, $color ,$cursor){
 		$x2=intval(round($line[1][0]*$size));
 		$y2=intval(round($line[1][1]*$size));
 
-		fill($img, $x-1+$x1 ,$y-1+$y1 ,$x+$x2 ,$y+$y2 ,$color);
+		img_fill($img, $x-1+$x1 ,$y-1+$y1 ,$x+$x2 ,$y+$y2 ,$color);
 	}
 }
 

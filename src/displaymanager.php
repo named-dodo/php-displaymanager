@@ -48,8 +48,8 @@ $mice = mouse_open($maxw, $maxh, $micedevicename);
 
 $moving=null;
 $resizing=null;
-$bordercolor=color(100,100,100);
-$headercolor=color(120,120,120);
+$bordercolor=rgb(100,100,100);
+$headercolor=rgb(120,120,120);
 
 addWindow( Wcreate(200, 150, 200, 150, "My Window") );
 addWindow( Wcreate(400, 300, 150, 150, "Another Window") );
@@ -67,12 +67,12 @@ while(!mouse_isPressed($mice,3)){
 //	if(!isset($sock) || !$sock) $sock=X11_accept($x11s);
 //	if(isset($sock) && $sock) X11_read($sock);
 
-	$buff=createImage($maxw, $maxh, color(10,10,20));
+	$buff=img_create($maxw, $maxh, rgb(10,10,20));
 
 	// start button and taskbar
 	$taskbar_h=25;
-	fill($buff,0,$maxh-$taskbar_h,$taskbar_h,$maxh,color(100,100,100));
-	fill($buff,$taskbar_h,$maxh-$taskbar_h,$maxw,$maxh,color(50,50,50));
+	img_fill($buff,0,$maxh-$taskbar_h,$taskbar_h,$maxh,rgb(100,100,100));
+	img_fill($buff,$taskbar_h,$maxh-$taskbar_h,$maxw,$maxh,rgb(50,50,50));
 
 	// draw windows.
 	$iter=createIterator(false);
@@ -191,18 +191,18 @@ while(!mouse_isPressed($mice,3)){
 	// testing the keyboard.
 	while(kbd_read($kbd)); // skip all key presses first. if you want to handle input, do something with those.
 	if( kbd_isPressed($kbd, kbd_getID("LEFTSHIFT")) )
-			drawString($buff, 10, 100, 15, 400, color(250,25,250) , "You have pressed the left-shift key" );
+			img_drawString($buff, 10, 100, 15, 400, rgb(250,25,250) , "You have pressed the left-shift key" );
 	if( kbd_isPressed($kbd, kbd_getID("RIGHTSHIFT")) )
-			drawString($buff, 10, 115, 15, 400, color(250,25,250) , "You have pressed the right-shift key" );
+			img_drawString($buff, 10, 115, 15, 400, rgb(250,25,250) , "You have pressed the right-shift key" );
 
 
 	// draw mouse
-	$mcolor= ( (mouse_isPressed($mice,1)) ? color(200,200,255) : color(100,100,255) );
-	drawCursor($buff, mouse_getX($mice), mouse_getY($mice), $mcolor, $cursor);
+	$mcolor= ( (mouse_isPressed($mice,1)) ? rgb(200,200,255) : rgb(100,100,255) );
+	img_drawCursor($buff, mouse_getX($mice), mouse_getY($mice), $mcolor, $cursor);
 
 	drawWindowsInfo($buff);
-	drawString($buff, 10, 10, 15, 40, color(250,25,250) , "".(microtime(true)-$time) );
-	drawString($buff, 80, 10, 15, 400, color(250,25,250) , "Click the scroll wheel to exit." );
+	img_drawString($buff, 10, 10, 15, 40, rgb(250,25,250) , "".(microtime(true)-$time) );
+	img_drawString($buff, 80, 10, 15, 400, rgb(250,25,250) , "Click the scroll wheel to exit." );
 
 	framebuffer_blit($framebuffer, $buff);
 }

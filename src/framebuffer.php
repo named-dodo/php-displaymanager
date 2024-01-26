@@ -22,7 +22,7 @@ function framebuffer_blit(&$framebuffer,&$image){
 
 	$fb=fopen($framebuffer['file'], "w");
 	if(!$fb){ return false; }
-	fwrite($fb,getD($image));
+	fwrite($fb,img_getD($image));
 	fclose($fb);
 }
 

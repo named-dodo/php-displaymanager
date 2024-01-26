@@ -1,13 +1,13 @@
 <?php /* Manage a window */
 
-$Wbordercolor=color(100,100,100);
-$Wheadercolor=color(120,120,120);
+$Wbordercolor=rgb(100,100,100);
+$Wheadercolor=rgb(120,120,120);
 
 //TODO many functions... :sweat_smile:
 function Wcreate($x,$y,$w,$h,$title){
 	return ['wid'=>null, 'title'=>$title, 'x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 
 					'minimized'=>false, 'maximized'=>false, 'borderless'=>false,
-					'buffer'=>createImage($w-2,$h-22,color(0,0,0)), 'xclientID'=>-1, 't'=>0 ];
+					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0 ];
 }
 
 function Wdestroy(&$w){}//TODO
@@ -21,7 +21,7 @@ function WgetH(&$w){ return $w['h']; }
 function WsetSize(&$w,$nw,$nh){
 	if($nw<40) $nw=40;
 	if($nh<22) $nh=22;
-	resize($w['buffer'],$nw-2,$nh-22);
+	img_resize($w['buffer'],$nw-2,$nh-22);
 	$w['w']=$nw; $w['h']=$nh;
 }
 
@@ -37,7 +37,7 @@ function fixC(&$c){
 
 	for($i=0;$i<=$h;$i++){
 		for($j=0;$j<=$w;$j++){
-			setpixel($c, $j, $i, color($j, $i, 100));
+			img_setPixel($c, $j, $i, rgb($j, $i, 100));
 		}
 	}
 }
@@ -51,28 +51,28 @@ function WfullDraw(&$window,&$img){
 		$w=$window['w'];
 		$h=$window['h'];
 
-		drawhline($img, $y,      $x, $x+$w-1,$Wbordercolor );
-		drawhline($img, $y+20,   $x, $x+$w-1,$Wbordercolor );
-		drawhline($img, $y+$h-1, $x, $x+$w-1,$Wbordercolor );
+		img_drawhline($img, $y,      $x, $x+$w-1,$Wbordercolor );
+		img_drawhline($img, $y+20,   $x, $x+$w-1,$Wbordercolor );
+		img_drawhline($img, $y+$h-1, $x, $x+$w-1,$Wbordercolor );
 
-		drawvline($img, $x,      $y, $y+$h-1,$Wbordercolor );
-		drawvline($img, $x+$w-1, $y, $y+$h-1,$Wbordercolor );
+		img_drawvline($img, $x,      $y, $y+$h-1,$Wbordercolor );
+		img_drawvline($img, $x+$w-1, $y, $y+$h-1,$Wbordercolor );
 
-		fill($img, $x+1, $y+1 , $x+$w-2, $y+19  , $Wheadercolor );
+		img_fill($img, $x+1, $y+1 , $x+$w-2, $y+19  , $Wheadercolor );
 
 		$bx=$x+$w-20; $by=$y+1; // close button
-		fill($img, $bx, $by, $bx+18, $by+18  , color(120,0,0) );
-		drawLine($img, $bx+4 , $by+3, $bx+15, $by+14  , color(255,50,50) );
-		drawLine($img, $bx+15, $by+3, $bx+4 , $by+14  , color(255,50,50) );
+		img_fill($img, $bx, $by, $bx+18, $by+18  , rgb(120,0,0) );
+		img_drawLine($img, $bx+4 , $by+3, $bx+15, $by+14  , rgb(255,50,50) );
+		img_drawLine($img, $bx+15, $by+3, $bx+4 , $by+14  , rgb(255,50,50) );
 
 		$bx=$x+$w-40; $by=$y+1; // minimize button
-		fill($img, $bx, $by, $bx+18, $by+18  , color(100,100,100) );
-		drawLine($img, $bx+2, $by+18, $bx+18 , $by+18  , color(200,200,200) );
+		img_fill($img, $bx, $by, $bx+18, $by+18  , rgb(100,100,100) );
+		img_drawLine($img, $bx+2, $by+18, $bx+18 , $by+18  , rgb(200,200,200) );
 
 		// window title
-		drawString($img, $x+5, $y+4, 12, $w-52, color(0,0,0) ,$window['title']);
+		img_drawString($img, $x+5, $y+4, 12, $w-52, rgb(0,0,0) ,$window['title']);
 
-		paint($img, $x+1, $y+21, $window['buffer'] );
+		img_paint($img, $x+1, $y+21, $window['buffer'] );
 }
 
 // returns:  -3=minimize, -2=destroy, -1=outside, 0=inside, 1=titlebar/move, 2=unknown, 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
@@ -90,7 +90,7 @@ function Wclick(&$w,&$click){
 		// clicked inside application?
 		if( $mx>$wx and $mx<$wx+$ww and $my>=$wy+20 and $my<$wy+$wh ){
 			if($click['press']) // TODO pass keypress to application
-				clear( $w['buffer'] , color(random_int(0,255),random_int(0,255),random_int(0,255)) );
+				img_clear( $w['buffer'] , rgb(random_int(0,255),random_int(0,255),random_int(0,255)) );
 			return 0;
 		}
 
@@ -173,7 +173,7 @@ function drawWindowsInfo(&$buff){
 	$i=2;
 	$iter=createIterator(false);
 	while( $window=nextWindow($iter) ){
-		drawString($buff, 15, 15*$i++, 12, 800, color(250,250,250) , WtoString($window) );
+		img_drawString($buff, 15, 15*$i++, 12, 800, rgb(250,250,250) , WtoString($window) );
 	}
 }
 ?>
