@@ -21,6 +21,18 @@ function img_clear(&$img, $color){
 	$img['d']=str_repeat($color , $img['w']*$img['h'] );
 }
 
+function img_invertColors(&$img){
+	$d=&$img['d'];
+	$size=4*$img['w']*$img['h'];
+
+	for($n=0;$n<$size;$n+=4){
+		$d[$n+0]=chr(255-ord($d[$n+0]) );
+		$d[$n+1]=chr(255-ord($d[$n+1]) );
+		$d[$n+2]=chr(255-ord($d[$n+2]) );
+	}
+}
+
+
 
 function img_setPixel(&$img, int $x, int $y, $color){
 	$d=&$img['d'];

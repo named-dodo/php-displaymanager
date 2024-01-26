@@ -200,6 +200,8 @@ while(!mouse_isPressed($mice,3)){
 	$mcolor= ( (mouse_isPressed($mice,1)) ? rgb(200,200,255) : rgb(100,100,255) );
 	img_drawCursor($buff, mouse_getX($mice), mouse_getY($mice), $mcolor, $cursor);
 
+	if(mouse_isPressed($mice,2)) img_invertColors($buff);
+
 	drawWindowsInfo($buff);
 	img_drawString($buff, 10, 10, 15, 40, rgb(250,25,250) , "".(microtime(true)-$time) );
 	img_drawString($buff, 80, 10, 15, 400, rgb(250,25,250) , "Click the scroll wheel to exit." );

@@ -33,7 +33,7 @@ A display manager (+window manager) inside PHP.
 * [ ] Multi-monitor support.
 * [x] Automatic resolution recognision.
 * [ ] Embedded terminal program.
-* [ ] Flashbang mode (invert colors)
+* [x] Flashbang mode (invert colors)
 * [ ] Wayland server support?
 * [ ] Multiple mouse/cursor support?
 
