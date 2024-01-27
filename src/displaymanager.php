@@ -17,7 +17,7 @@ include 'framebuffer.php';
 include 'mouse.php';
 include 'keyboard.php';
 include 'window.php';
-include 'windowlist.php';
+include 'list.php';
 include 'X11server.php';
 
 
@@ -45,14 +45,15 @@ $mice = mouse_open($maxw, $maxh, $micedevicename);
 // TODO disabled incomplete Xorg server implementation
 //$x11s = X11_init($X11SocketAddress);
 
+$wlist = list_create();
 
 $moving=null;
 $resizing=null;
 $bordercolor=rgb(100,100,100);
 $headercolor=rgb(120,120,120);
 
-addWindow( Wcreate(200, 150, 200, 150, "My Window") );
-addWindow( Wcreate(400, 300, 150, 150, "Another Window") );
+list_add($wlist, Wcreate(200, 150, 200, 150, "My Window") );
+list_add($wlist, Wcreate(400, 300, 150, 150, "Another Window") );
 
 
 
@@ -75,11 +76,11 @@ while(!mouse_isPressed($mice,3)){
 	img_fill($buff,$taskbar_h,$maxh-$taskbar_h,$maxw,$maxh,rgb(50,50,50));
 
 	// draw windows.
-	$iter=createIterator(false);
-	while( $window=&nextWindow($iter) ){
+	$iter=list_iterator($wlist);
+	while( $window=&list_prev($iter) ){
 		WfullDraw($window,$buff);
 	}
-	unset($window);
+	unset($iter, $window);
 
 	if($moving){
 		$moving['window']["x"]=mouse_getX($mice)+$moving['xoff'];
@@ -109,7 +110,6 @@ while(!mouse_isPressed($mice,3)){
 
 		WsetPosition($win, $wx, $wy);
 		WsetSize($win, $ww, $wh);
-
 	}
 
 	// pullClick returns an array("x"=>$mousex, "y"=>$mousey, "button"=>1, "press"=>$button1) or null
@@ -132,19 +132,24 @@ while(!mouse_isPressed($mice,3)){
 		
 		// which window was clicked?
 		$window=null;
-		$iter=createIterator(true);
-		while( 	$window=&nextWindow($iter) ){
+		$iter=list_iterator($wlist);
+		while( $window=&list_next($iter) ){
+
 			// returns:  -3=minimize, -2=destroy, -1=outside, 0=inside, 1=titlebar/move, 2=unknown, 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
 			$result=Wclick($window,$click);
 
 			if($result==-1){ continue; }
 			$handled=true;
 
-			if($result==-2){ deleteWindow($window); break; }
+			if($result==-2){
+				list_remove($iter);
+				Wdestroy($window);
+				break;
+			}
 			if($result==-3){ break; }
 
 			// move window to top if it ain't.
-			raiseWindow($window);
+			list_raise($iter);
 			WfullDraw($window,$buff);
 
 			if($result==0){ break; }
@@ -162,14 +167,15 @@ while(!mouse_isPressed($mice,3)){
 				break;
 			}
 			break;
+
 		}
-		unset($window);
+		unset($iter, $window);
 
 		if($handled) continue;
 
 		// start button pressed.
 		if($click['press'] and $mx<25 and $my+25>$maxh){
-			addWindow( Wcreate(rand(10,1200), rand(10,800), rand(50,900), rand(30,800), "Another Window ".rand(1000,9999) ) );
+			list_add($wlist, Wcreate(rand(10,1200), rand(10,400), rand(50,700), rand(30,600), "Another Window ".rand(1000,9999) ) );
 		}
 
 	}
@@ -177,16 +183,15 @@ while(!mouse_isPressed($mice,3)){
 	// find hover icon.
 	$cursor=0;
 	$window=null;
-	$iter=createIterator(true);
-	while( $window=&nextWindow($iter) ){
-
+	$iter=list_iterator($wlist);
+	while( $window=&list_next($iter) ){
 		$result=Whover($window, mouse_getX($mice), mouse_getY($mice) );
 
-		if($result==-1)	continue;
+		if($result==-1) continue;
 		$cursor=$result;
 		break;
 	}
-	unset($window);
+	unset($iter,$window);
 
 	// testing the keyboard.
 	while(kbd_read($kbd)); // skip all key presses first. if you want to handle input, do something with those.
@@ -202,7 +207,7 @@ while(!mouse_isPressed($mice,3)){
 
 	if(mouse_isPressed($mice,2)) img_invertColors($buff);
 
-	drawWindowsInfo($buff);
+	drawWindowsInfo($buff,$wlist);
 	img_drawString($buff, 10, 10, 15, 40, rgb(250,25,250) , "".(microtime(true)-$time) );
 	img_drawString($buff, 80, 10, 15, 400, rgb(250,25,250) , "Click the scroll wheel to exit." );
 

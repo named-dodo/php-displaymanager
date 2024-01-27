@@ -170,11 +170,12 @@ function WtoString(&$w){
 	return "id={$w['wid']}, title={$w['title']}, x={$w['x']}, y={$w['y']} ,w={$w['w']} ,h={$w['h']} ,min=$wmin , t={$w['t']}";
 }
 
-function drawWindowsInfo(&$buff){
+function drawWindowsInfo(&$buff, $wlist){
 	$i=2;
-	$iter=createIterator(false);
-	while( $window=nextWindow($iter) ){
-		img_drawString($buff, 15, 15*$i++, 12, 800, rgb(250,250,250) , WtoString($window) );
+	$iter=list_iterator($wlist);
+	while( $window=&list_next($iter) ){
+		img_drawString($buff, 15, 15*$i++, 12, 800, rgb(250,250,250) , ">".WtoString($window) );
 	}
+	unset($iter);
 }
 ?>
