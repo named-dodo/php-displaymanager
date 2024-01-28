@@ -7,7 +7,7 @@ $Wheadercolor=rgb(120,120,120);
 function Wcreate($x,$y,$w,$h,$title){
 	return ['wid'=>null, 'title'=>$title, 'x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 
 					'minimized'=>false, 'maximized'=>false, 'borderless'=>false,
-					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0 ];
+					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0, 'color'=>rgb(0,0,0) ];
 }
 
 function Wdestroy(&$w){}//TODO

@@ -17,7 +17,7 @@ function &list_findNode(&$list, &$item){
 }
 
 
-function list_add(&$list, $item){
+function list_add(&$list, &$item){
 	$node = [ 'item'=>&$item, 'list'=>&$list, 'prev'=>false, 'next'=>false ];
 	if( $list['first'] ){
 		$list['first']['prev']=&$node;
@@ -27,7 +27,7 @@ function list_add(&$list, $item){
 }
 
 function list_iterator(&$list){
-	return ['list'=>$list, 'current'=>false ];
+	return ['list'=>&$list, 'current'=>false ];
 }
 
 function &list_next(&$iterator){

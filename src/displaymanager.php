@@ -67,8 +67,12 @@ if( $background and img_getW($background)==$maxw and img_getH($background)==$max
 	$background=img_create($maxw, $maxh, rgb(10,10,20));
 }
 
-list_add($wlist, Wcreate(200, 150, 200, 150, "My Window") );
-list_add($wlist, Wcreate(400, 300, 150, 150, "Another Window") );
+
+$thing1=Wcreate(200, 150, 200, 150, "My Window");
+$thing2=Wcreate(450, 300, 150, 150, "Another Window");
+list_add($wlist, $thing1);
+list_add($wlist, $thing2);
+unset($thing1, $thing2);
 
 
 while(!mouse_isPressed($mice,3)){
@@ -85,8 +89,12 @@ while(!mouse_isPressed($mice,3)){
 
 	// start button and taskbar
 	$taskbar_h=25;
-	img_fill($buff,0,$maxh-$taskbar_h,$taskbar_h,$maxh,rgb(100,100,100));
-	img_fill($buff,$taskbar_h,$maxh-$taskbar_h,$maxw,$maxh,rgb(50,50,50));
+	img_fill($buff,0,$maxh-$taskbar_h,$maxw,$maxh,rgb(50,50,50));
+	img_fill($buff, $taskbar_h*0	,$maxh-$taskbar_h, $taskbar_h*1 ,$maxh,rgb(100,100,100)); // random empty window
+
+	img_fill($buff, $taskbar_h*1	,$maxh-$taskbar_h, $taskbar_h*2 ,$maxh,rgb(50,100,50)); // builtin terminal
+	img_drawString($buff, $taskbar_h+10, $maxh-$taskbar_h, 22, 40, rgb(0,255,0) , "T" );
+
 
 	// draw windows.
 	$iter=list_iterator($wlist);
@@ -144,7 +152,6 @@ while(!mouse_isPressed($mice,3)){
 		$my=$click['y'];		
 		
 		// which window was clicked?
-		$window=null;
 		$iter=list_iterator($wlist);
 		while( $window=&list_next($iter) ){
 
@@ -188,14 +195,22 @@ while(!mouse_isPressed($mice,3)){
 
 		// start button pressed.
 		if($click['press'] and $mx<25 and $my+25>$maxh){
-			list_add($wlist, Wcreate(rand(10,1200), rand(10,400), rand(50,700), rand(30,600), "Another Window ".rand(1000,9999) ) );
+			$colorwindow=Wcreate(rand(10,1200), rand(10,400), rand(50,700), rand(30,600), "Another Window ".rand(1000,9999) );
+			list_add($wlist, $colorwindow );
+			unset($colorwindow);
+		}
+
+		// terminal button pressed.
+		if($click['press'] and $mx>25 and $mx<50 and $my+25>$maxh){
+			$termwindow=Wcreate(rand(100,500), rand(100,200), 500, 400, "Terminal window" );
+			list_add($wlist, $termwindow );
+			unset($termwindow);
 		}
 
 	}
 
 	// find hover icon.
 	$cursor=0;
-	$window=null;
 	$iter=list_iterator($wlist);
 	while( $window=&list_next($iter) ){
 		$result=Whover($window, mouse_getX($mice), mouse_getY($mice) );
