@@ -32,6 +32,18 @@ function img_invertColors(&$img){
 	}
 }
 
+function img_dim(&$img, $times){
+	$d=&$img['d'];
+	if($times++==-1) return;
+
+	$size=4*$img['w']*$img['h'];
+	for($n=0;$n<$size;$n+=4){
+		$d[$n+0]=chr(ord($d[$n+0])/$times );
+		$d[$n+1]=chr(ord($d[$n+1])/$times );
+		$d[$n+2]=chr(ord($d[$n+2])/$times );
+	}
+}
+
 
 
 function img_setPixel(&$img, int $x, int $y, $color){
@@ -257,6 +269,44 @@ function img_drawCursor(&$img, $x, $y, $color ,$cursor){
 }
 
 //TODO more image copying? (transparancy?)
+
+
+// load a PPM image from a given file path. (see https://en.wikipedia.org/wiki/Netpbm )
+function img_loadPPM($path){
+	if(!is_readable($path)){
+		echo("Image path invalid\n");
+		return false;
+	}
+	$fd = fopen($path, "r");
+
+	if( trim(fgets($fd))!=='P6' ) {
+		fclose($fd);
+		echo("Image must be a binary PPM file (P6).\n");
+		return false;
+	}
+	$dim=trim(fgets($fd));
+	while($dim[0]=='#'){ $dim=trim(fgets($fd)); }
+	$w=intval(explode(' ',$dim)[0]);
+	$h=intval(explode(' ',$dim)[1]);
+
+	if(trim(fgets($fd))!="255") {
+		fclose($fd);
+		echo("pixelcount invalid (must be 255 values/pixel)\n");
+		return false;
+	}
+
+	$d=str_repeat(rgb(255,0,255), $w*$h);
+
+	$size=4*$w*$h;
+	for($n=0;$n<$size;$n+=4){
+		$chrs=fread($fd,3); // RGB to BGR
+		$d[$n+0]=$chrs[2];
+		$d[$n+1]=$chrs[1];
+		$d[$n+2]=$chrs[0];
+	}
+	fclose($fd);
+	return array( 'w'=>$w, 'h'=>$h, 'd'=>&$d );
+}
 
 
 

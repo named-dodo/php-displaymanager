@@ -52,10 +52,23 @@ $resizing=null;
 $bordercolor=rgb(100,100,100);
 $headercolor=rgb(120,120,120);
 
+
+$background=false;
+foreach( glob("./res/background_*.ppm") as $background_file ){
+	$background = img_loadPPM($background_file);
+	if( $background and img_getW($background)==$maxw and img_getH($background)==$maxh ) break;
+}
+
+
+if( $background and img_getW($background)==$maxw and img_getH($background)==$maxh ){
+	img_dim($background, 1);
+} else {
+	echo("Failed loading ".$maxw."x".$maxh." wallpaper.\r\n");
+	$background=img_create($maxw, $maxh, rgb(10,10,20));
+}
+
 list_add($wlist, Wcreate(200, 150, 200, 150, "My Window") );
 list_add($wlist, Wcreate(400, 300, 150, 150, "Another Window") );
-
-
 
 
 while(!mouse_isPressed($mice,3)){
@@ -68,7 +81,7 @@ while(!mouse_isPressed($mice,3)){
 //	if(!isset($sock) || !$sock) $sock=X11_accept($x11s);
 //	if(isset($sock) && $sock) X11_read($sock);
 
-	$buff=img_create($maxw, $maxh, rgb(10,10,20));
+	$buff=$background;
 
 	// start button and taskbar
 	$taskbar_h=25;
