@@ -221,8 +221,15 @@ while(!mouse_isPressed($mice,3)){
 	}
 	unset($iter,$window);
 
+
 	// testing the keyboard.
-	while(kbd_read($kbd)); // skip all key presses first. if you want to handle input, do something with those.
+	$iter=list_iterator($wlist);
+	$window=&list_next($iter);
+	while($keypress=kbd_read($kbd)){
+		if($window) Wpress($window, $keypress);
+	}
+	unset($iter, $window);
+
 	if( kbd_isPressed($kbd, kbd_getID("LEFTSHIFT")) )
 			img_drawString($buff, 10, 100, 15, 400, rgb(250,25,250) , "You have pressed the left-shift key" );
 	if( kbd_isPressed($kbd, kbd_getID("RIGHTSHIFT")) )

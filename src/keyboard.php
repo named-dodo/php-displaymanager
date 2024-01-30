@@ -36,7 +36,7 @@ function kbd_read(&$kbd){
 			if($index==false) $kbd["pressed"][]=$p_code;
 		}
 
-		return ['key'=>$p_code,'action'=>$p_val];
+		return ['key'=>$p_code,'action'=>$p_val, 'kbd'=>&$kbd];
 	}
 	return false;
 }
@@ -81,14 +81,30 @@ false, false, false, false, false, false, false, false, ",", "\n", false, "/", f
 false, false, false, "=", false, false, false, ",", false, false, false, false, false, false ] );
 
 // returns a corresponding ASCII character or false if there is none.
-function kbd_getChar(&$kbd, $key_event){
+function kbd_getChar($key_event){
 	if($key_event['action']==0) return false;
 	
-	if(kbd_isPressed($kbd, kbd_getID('LEFTSHIFT')) or kbd_isPressed($kbd, kbd_getID('RIGHTSHIFT')) ){
+	if(kbd_isPressed($key_event['kbd'], kbd_getID('LEFTSHIFT')) or kbd_isPressed($key_event['kbd'], kbd_getID('RIGHTSHIFT')) ){
 		return KBD_CHAR_SHIFTED[$key_event['key']];
 	}else{
 		return KBD_CHAR_NORMAL[$key_event['key']];
 	}
+}
+// check if key event is key of certain keyname.
+function kbd_isKey($key_event, $key_name){
+	return kbd_getID($key_name)==$key_event['key'];
+}
+// check if key event is up press
+function kbd_isUp($key_event){
+	return $key_event['action']==0;
+}
+// check if key event is down press
+function kbd_isDown($key_event){
+	return $key_event['action']==1;
+}
+// check if key event is down press
+function kbd_isRepeat($key_event){
+	return $key_event['action']==2;
 }
 
 ?>

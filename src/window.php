@@ -7,7 +7,7 @@ $Wheadercolor=rgb(120,120,120);
 function Wcreate($x,$y,$w,$h,$title){
 	return ['wid'=>null, 'title'=>$title, 'x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 
 					'minimized'=>false, 'maximized'=>false, 'borderless'=>false,
-					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0, 'color'=>rgb(0,0,0) ];
+					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0, 'color'=>rgb(0,0,0), 'string'=>"" ];
 }
 
 function Wdestroy(&$w){}//TODO
@@ -161,7 +161,13 @@ function Whover(&$w,$mx, $my){
 	return $resize; // 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
 }
 
-function Wpress(&$w,$keypress){}//TODO
+function Wpress(&$w,$keypress){
+	$char=kbd_getChar($keypress);
+	if(!$char) return;
+
+	$w['string']=$w['string'].$char;
+	img_drawString($w['buffer'], 10,10,15,400, rgb(10,200,10), $w['string']);
+}
 
 
 
