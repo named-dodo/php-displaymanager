@@ -20,6 +20,9 @@ include 'window.php';
 include 'list.php';
 include 'X11server.php';
 
+include 'wc_empty.php';
+include 'wc_terminal.php';
+
 
 tty_disable();
 
@@ -68,8 +71,8 @@ if( $background and img_getW($background)==$maxw and img_getH($background)==$max
 }
 
 
-$thing1=Wcreate(200, 150, 200, 150, "My Window");
-$thing2=Wcreate(450, 300, 150, 150, "Another Window");
+$thing1=Wcreate(200, 150, 200, 150, "My Window", 'empty');
+$thing2=Wcreate(450, 300, 150, 150, "Another Window", 'empty');
 list_add($wlist, $thing1);
 list_add($wlist, $thing2);
 unset($thing1, $thing2);
@@ -195,14 +198,14 @@ while(!mouse_isPressed($mice,3)){
 
 		// start button pressed.
 		if($click['press'] and $mx<25 and $my+25>$maxh){
-			$colorwindow=Wcreate(rand(10,1200), rand(10,400), rand(50,700), rand(30,600), "Another Window ".rand(1000,9999) );
+			$colorwindow=Wcreate(rand(10,1200), rand(10,400), rand(50,700), rand(30,600), "Another Window ".rand(1000,9999), 'empty' );
 			list_add($wlist, $colorwindow );
 			unset($colorwindow);
 		}
 
 		// terminal button pressed.
 		if($click['press'] and $mx>25 and $mx<50 and $my+25>$maxh){
-			$termwindow=Wcreate(rand(100,500), rand(100,200), 500, 400, "Terminal window" );
+			$termwindow=Wcreate(rand(100,500), rand(100,200), 500, 400, "Terminal window", 'terminal' );
 			list_add($wlist, $termwindow );
 			unset($termwindow);
 		}
@@ -242,7 +245,13 @@ while(!mouse_isPressed($mice,3)){
 
 	if(mouse_isPressed($mice,2)) img_invertColors($buff);
 
-	drawWindowsInfo($buff,$wlist);
+	$i=2;
+	$iter=list_iterator($wlist);
+	while( $window=&list_next($iter) ){
+		img_drawString($buff, 15, 15*$i++, 12, 800, rgb(250,250,250) , "> ".WtoString($window) );
+	}
+	unset($iter, $window);
+
 	img_drawString($buff, 10, 10, 15, 40, rgb(250,25,250) , "".(microtime(true)-$time) );
 	img_drawString($buff, 80, 10, 15, 400, rgb(250,25,250) , "Click the scroll wheel to exit." );
 

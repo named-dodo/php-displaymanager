@@ -3,14 +3,36 @@
 $Wbordercolor=rgb(100,100,100);
 $Wheadercolor=rgb(120,120,120);
 
-//TODO many functions... :sweat_smile:
-function Wcreate($x,$y,$w,$h,$title){
-	return ['wid'=>null, 'title'=>$title, 'x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 
+
+function &Wcreate($x,$y,$w,$h,$title, $wc_name, $wc_data=null){
+	$w = ['x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 'title'=>$title,
 					'minimized'=>false, 'maximized'=>false, 'borderless'=>false,
-					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'xclientID'=>-1, 't'=>0, 'color'=>rgb(0,0,0), 'string'=>"" ];
+					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'wc_name'=>$wc_name  ];
+
+	// register functions for window client.
+	foreach( ['init','destroy','keypress','hover','click'] as $func_action){
+		$function_name='wc_'.$func_action.'_'.$wc_name;
+		if(!function_exists($function_name)){
+			echo("Window Client function $function_name does not exist!");
+			return false;
+		}
+		$w['wc_'.$func_action]=$function_name;
+	}
+
+	$w['wc']=$w['wc_init']($w, $wc_data);
+
+	return $w;
 }
 
-function Wdestroy(&$w){}//TODO
+
+function Wdestroy(&$w){
+	$w['wc_destroy']($w);
+}
+
+function Wpress(&$w,$keypress){
+	$w['wc_keypress']($w, $keypress);
+}
+
 
 function WgetX(&$w){ return $w['x']; }
 function WgetY(&$w){ return $w['y']; }
@@ -21,7 +43,7 @@ function WgetH(&$w){ return $w['h']; }
 function WsetSize(&$w,$nw,$nh){
 	if($nw<40) $nw=40;
 	if($nh<22) $nh=22;
-	img_resize($w['buffer'],$nw-2,$nh-22, $w['color']);
+	img_resize($w['buffer'],$nw-2,$nh-22, rgb(0,0,0));
 	$w['w']=$nw; $w['h']=$nh;
 }
 
@@ -31,16 +53,6 @@ function WMaximize(&$w,$x,$y,$wn,$nh){} //TODO later
 function WUnMaximize(&$w){} //TODO later
 function WsetBorderless(&$w,$bool){}//TODO later
 
-function fixC(&$c){
-	$w=$c['w'];
-	$h=$c['h'];
-
-	for($i=0;$i<=$h;$i++){
-		for($j=0;$j<=$w;$j++){
-			img_setPixel($c, $j, $i, rgb($j, $i, 100));
-		}
-	}
-}
 
 function WfullDraw(&$window,&$img){
 		GLOBAL $Wbordercolor, $Wheadercolor;
@@ -89,9 +101,10 @@ function Wclick(&$w,&$click){
 
 		// clicked inside application?
 		if( $mx>$wx and $mx<$wx+$ww and $my>=$wy+20 and $my<$wy+$wh ){
-			if($click['press']) // TODO pass keypress to application
-				$w['color']=rgb(random_int(0,255),random_int(0,255),random_int(0,255));
-				img_clear( $w['buffer'] , $w['color'] );
+			$passed_click=$click;
+			$passed_click['x']=$passed_click['x']-1;
+			$passed_click['y']=$passed_click['y']-20;
+			$w['wc_click']($w, $passed_click);
 			return 0;
 		}
 
@@ -138,7 +151,7 @@ function Whover(&$w,$mx, $my){
 
 		// inside application content?
 		if( $mx>$wx and $mx<$wx+$ww and $my>=$wy+20 and $my<$wy+$wh ){
-			return 0;
+			return $w['wc_hover']($w, $mx-1,$my-20);
 		}
 
 		// window title bar
@@ -161,27 +174,12 @@ function Whover(&$w,$mx, $my){
 	return $resize; // 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
 }
 
-function Wpress(&$w,$keypress){
-	$char=kbd_getChar($keypress);
-	if(!$char) return;
 
-	$w['string']=$w['string'].$char;
-	img_drawString($w['buffer'], 10,10,15,400, rgb(10,200,10), $w['string']);
+
+
+function WtoString(&$w){
+	$wmin=($w['minimized'])?'true':'false';
+	return "title={$w['title']}, x={$w['x']}, y={$w['y']} ,w={$w['w']} ,h={$w['h']} ,min=$wmin";
 }
 
-
-
-function WtoString(&$w){ 
-	$wmin='false'; if($w['minimized']==true) $wmin='true';
-	return "id={$w['wid']}, title={$w['title']}, x={$w['x']}, y={$w['y']} ,w={$w['w']} ,h={$w['h']} ,min=$wmin , t={$w['t']}";
-}
-
-function drawWindowsInfo(&$buff, $wlist){
-	$i=2;
-	$iter=list_iterator($wlist);
-	while( $window=&list_next($iter) ){
-		img_drawString($buff, 15, 15*$i++, 12, 800, rgb(250,250,250) , ">".WtoString($window) );
-	}
-	unset($iter);
-}
 ?>
