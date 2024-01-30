@@ -18,6 +18,7 @@ function &list_findNode(&$list, &$item){
 
 
 function list_add(&$list, &$item){
+	if(!( isset($item) and $item )) return;
 	$node = [ 'item'=>&$item, 'list'=>&$list, 'prev'=>false, 'next'=>false ];
 	if( $list['first'] ){
 		$list['first']['prev']=&$node;
