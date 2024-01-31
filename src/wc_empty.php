@@ -7,6 +7,8 @@ function wc_init_empty(&$w, $data){
 
 function wc_destroy_empty(&$w){}
 
+function wc_tick_empty(&$w){}
+
 
 function wc_keypress_empty(&$w, $keypress){}
 

@@ -235,6 +235,7 @@ function img_drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 
 // draw string at x y with h height and mw as max width.
 function img_drawString(&$img, $x, $y, $h, $mw, $color ,$text){
+	if(empty($text)) return;
 	$xoff=0;
 	foreach(str_split(strtolower($text)) as $char){
 		$lines=dodofont_getCharLines($char);

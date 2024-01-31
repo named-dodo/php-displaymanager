@@ -10,7 +10,7 @@ function &Wcreate($x,$y,$w,$h,$title, $wc_name, $wc_data=null){
 					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'wc_name'=>$wc_name  ];
 
 	// register functions for window client.
-	foreach( ['init','destroy','keypress','hover','click'] as $func_action){
+	foreach( ['init','destroy','tick','keypress','hover','click'] as $func_action){
 		$function_name='wc_'.$func_action.'_'.$wc_name;
 		if(!function_exists($function_name)){
 			echo("Window Client function $function_name does not exist!");
@@ -20,13 +20,18 @@ function &Wcreate($x,$y,$w,$h,$title, $wc_name, $wc_data=null){
 	}
 
 	$w['wc']=$w['wc_init']($w, $wc_data);
+	if(!$w['wc']) return false;
 
 	return $w;
 }
 
 
 function Wdestroy(&$w){
-	$w['wc_destroy']($w);
+	$w['wc_destroy']($w); //TODO proper destruction
+}
+
+function Wtick(&$w){
+	$w['wc_tick']($w);
 }
 
 function Wpress(&$w,$keypress){

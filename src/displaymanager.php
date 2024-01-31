@@ -19,6 +19,7 @@ include 'keyboard.php';
 include 'window.php';
 include 'list.php';
 include 'X11server.php';
+include 'process.php';
 
 include 'wc_empty.php';
 include 'wc_terminal.php';
@@ -102,6 +103,7 @@ while(!mouse_isPressed($mice,3)){
 	// draw windows.
 	$iter=list_iterator($wlist);
 	while( $window=&list_prev($iter) ){
+		Wtick($window);
 		WfullDraw($window,$buff);
 	}
 	unset($iter, $window);

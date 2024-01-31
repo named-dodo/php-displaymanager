@@ -27,14 +27,14 @@ A display manager (+window manager) inside PHP.
 
 
 ## TODO / Goals
-* [ ] Clean up and restructure the source code.
-* [ ] Finish the X11 protocol implementation.
-* [ ] Optimize rendering system.
-* [ ] Multi-monitor support.
 * [x] Automatic resolution recognision.
-* [ ] Embedded terminal program.
 * [x] Flashbang mode (invert colors)
 * [x] Wallpaper support
+* [x] Embedded terminal program.
+* [ ] Clean up and restructure the source code.
+* [ ] Optimize rendering system.
+* [ ] Multi-monitor support.
+* [ ] Finish the X11 protocol implementation.
 * [ ] Wayland server support?
 * [ ] Multiple mouse/cursor support?
 
