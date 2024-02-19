@@ -48,7 +48,7 @@ function WgetH(&$w){ return $w['h']; }
 function WsetSize(&$w,$nw,$nh){
 	if($nw<40) $nw=40;
 	if($nh<22) $nh=22;
-	img_resize($w['buffer'],$nw-2,$nh-22, rgb(0,0,0));
+	img_setSize($w['buffer'],$nw-2,$nh-22, rgb(0,0,0));
 	$w['w']=$nw; $w['h']=$nh;
 }
 

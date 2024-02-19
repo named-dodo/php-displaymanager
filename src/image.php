@@ -11,6 +11,12 @@ function img_create($w, $h, $color){
 	return array( 'w'=>$w, 'h'=>$h, 'd'=>str_repeat($color, $w*$h) );
 }
 
+// Fully copy an image
+function img_copy(&$img){
+	return array( 'w'=>$img['w'], 'h'=>$img['h'], 'd'=>$img['d'] );
+}
+
+
 function img_getW(&$img){ return $img['w']; }
 function img_getH(&$img){ return $img['h']; }
 function &img_getD(&$img){ return $img['d']; }
@@ -47,8 +53,10 @@ function img_dim(&$img, $times){
 
 
 function img_setPixel(&$img, int $x, int $y, $color){
+	$w=$img['w'];
+	if($x<0 || $y<0 || $x>=$w || $y>=$img['h'] ) return;
 	$d=&$img['d'];
-	$ptr=4*($x+$y*$img['w']);
+	$ptr=4*($x+$y*$w);
 	$d[$ptr+0]=$color[0];
 	$d[$ptr+1]=$color[1];
 	$d[$ptr+2]=$color[2];
@@ -116,8 +124,8 @@ function img_resize_h(&$img, int $nh, $color=IMG_DEFAULT_COLOR ){
 	$img['h']=$nh;
 }
 
-// resize image
-function img_resize(&$img, int $nw, int $nh, $color=IMG_DEFAULT_COLOR){
+// change the image dimensions but don't resize the image itself.
+function img_setSize(&$img, int $nw, int $nh, $color=IMG_DEFAULT_COLOR){
 	$ow=$img['w'];
 	$oh=$img['h'];
 	if( ($nw==$ow && $nh==$oh)||$nw<0||$nh<0 ) return;
@@ -133,6 +141,38 @@ function img_resize(&$img, int $nw, int $nh, $color=IMG_DEFAULT_COLOR){
 		img_resize_w($img,$nw, $color);
 	}
 }
+
+// resize the image dimensions, and resize the image itself too.
+function img_resize(&$img, int $nw, int $nh){
+	$ow=$img['w'];
+	$oh=$img['h'];
+	$od=&$img['d'];
+
+	if( ($nw==$ow && $nh==$oh)||$nw<0||$nh<0 ) return;
+
+	$nd=str_repeat(rgb(0,0,0), $nw*$nh);
+
+	$img['w']=$nw;
+	$img['h']=$nh;
+	$img['d']=&$nd;
+	
+
+	for($y=0;$y<$nh;$y++){
+		$nli=$nw*$y;
+		$oli=$ow*(int)($y*$oh/$nh);
+		for($x=0;$x<$nw;$x++){
+				$ni=4*($x+$nli);
+				$no=4*( (int)($x*$ow/$nw) + $oli);
+				$nd[$ni+0]=$od[$no+0];
+				$nd[$ni+1]=$od[$no+1];
+				$nd[$ni+2]=$od[$no+2];
+				$nd[$ni+3]=$od[$no+3];
+		}
+	}
+}
+
+
+
 
 // fully draw an src image onto a dest image.
 function img_paint(&$dest, int $x, int $y, &$src){

@@ -60,7 +60,11 @@ $headercolor=rgb(120,120,120);
 $background=false;
 foreach( glob("./res/background_*.ppm") as $background_file ){
 	$background = img_loadPPM($background_file);
-	if( $background and img_getW($background)==$maxw and img_getH($background)==$maxh ) break;
+	if( $background ) break;
+}
+
+if( $background and ! ( img_getW($background)==$maxw and img_getH($background)==$maxh ) ){
+	img_resize($background, $maxw, $maxh );
 }
 
 
@@ -239,7 +243,6 @@ while(!mouse_isPressed($mice,3)){
 			img_drawString($buff, 10, 100, 15, 400, rgb(250,25,250) , "You have pressed the left-shift key" );
 	if( kbd_isPressed($kbd, kbd_getID("RIGHTSHIFT")) )
 			img_drawString($buff, 10, 115, 15, 400, rgb(250,25,250) , "You have pressed the right-shift key" );
-
 
 	// draw mouse
 	$mcolor= ( (mouse_isPressed($mice,1)) ? rgb(200,200,255) : rgb(100,100,255) );
