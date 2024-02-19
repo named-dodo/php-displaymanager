@@ -172,8 +172,6 @@ function img_resize(&$img, int $nw, int $nh){
 }
 
 
-
-
 // fully draw an src image onto a dest image.
 function img_paint(&$dest, int $x, int $y, &$src){
 	$dout=&$dest['d'];
@@ -203,6 +201,63 @@ function img_paint(&$dest, int $x, int $y, &$src){
 		}
 	}
 }
+
+// partially draw an src image onto a dest image.
+function img_copy(&$dest, int $dx, int $dy, &$src, int $x1, int $y1, int $x2, int $y2){
+	$dout=&$dest['d'];
+	$din =&$src['d'];
+
+	$dw=$dest['w'];
+	$dh=$dest['h'];
+	$sw=$src['w'];
+	$sh=$src['h'];
+
+	// inverted or out of target source
+	if( $x1>$sw or $x2<=$x1 ) return;
+	if( $y1>$sh or $y2<=$y1 ) return;
+
+	// negative source
+	if($x1<0){ $dx+=abs($x1); $x1=0; }
+	if($y1<0){ $dy+=abs($y1); $y1=0; }
+
+	// max source size
+	if($x2>$sw) $x2=$sw;
+	if($y2>$sh) $y2=$sh;
+
+	// target offset over target dimensions
+	if($dx>=$dw) return;
+	if($dy>=$dh) return;
+
+	// target offset negative
+	if($dx<0){ $x1+=abs($dx); $dx=0; }
+	if($dy<0){ $y1+=abs($dy); $dy=0; }
+
+	// target end offset over target dimensions
+	if($dx+$x2-$x1>$dw){ $x2-=($dx+$x2-$x1-$dw); }
+	if($dy+$y2-$y1>$dh){ $y2-=($dy+$y2-$y1-$dh); }
+
+
+	while($y1<$y2){
+		$x=$x1;
+		$dx2=$dx;
+
+		while($x<$x2){
+			$srcindex=4*( $y1*$sw + $x );
+			$dstindex=4*( $dy*$dw + $dx2 );
+
+			$dout[$dstindex+0]=$din[$srcindex+0];
+			$dout[$dstindex+1]=$din[$srcindex+1];
+			$dout[$dstindex+2]=$din[$srcindex+2];
+			$dout[$dstindex+3]=$din[$srcindex+3];
+
+			$x++;
+			$dx2++;
+		}
+		$y1++;
+		$dy++;
+	}
+}
+
 
 function img_drawhline(&$img, int $y, int $x1, int $x2, $color){
 	$maxw=$img['w'];
@@ -264,7 +319,7 @@ function img_drawLine(&$img, $x1, $y1, $x2, $y2, $color){
 	$rx/=$steps;
 	$ry/=$steps;
 
-	for($i=0;$i<$steps+0.01;$i+=1){
+	for($i=0;$i<$steps+0.49;$i+=1){
 		$x=intval(round($x1+ $rx*$i));
 		$y=intval(round($y1+ $ry*$i));
 
