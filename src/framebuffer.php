@@ -21,9 +21,10 @@ function framebuffer_blit(&$framebuffer,&$image){
 	}
 
 	$fb=fopen($framebuffer['file'], "w");
-	if(!$fb){ return false; }
+	if(!$fb){ echo("Error writing to framebuffer file:".$framebuffer['file']."\n"); return false; }
 	fwrite($fb,img_getD($image));
 	fclose($fb);
+	return true;
 }
 
 ?>

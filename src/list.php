@@ -76,10 +76,11 @@ function list_remove(&$iterator){
 	unset($node['list']);
 }
 
+// move this element to the front of the list. returns false if it already was.
 function list_raise(&$iterator){
 	$false=false;
 	$node=&$iterator['current'];
-	if($node['list']['first']===$node) return;
+	if($node['list']['first']===$node) return false;
 
 	//maintain iterator position.
 	$temp=[ 'item'=>&$node['item'], 'list'=>&$list, 'prev'=>&$node['prev'], 'next'=>&$node['next'] ];;
@@ -98,6 +99,8 @@ function list_raise(&$iterator){
 	}
 	$node['prev']=&$false;
 	$node['list']['first']=&$node;
+
+	return true;
 }
 
 

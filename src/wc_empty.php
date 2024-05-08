@@ -18,9 +18,16 @@ function wc_hover_empty(&$w, $mx, $my){
 }
 
 function wc_click_empty(&$w, $click){
+	GLOBAL $compositor;
 	if(!$click['press']) return;
 	$w['wc']['color']=rgb(random_int(0,255),random_int(0,255),random_int(0,255));
 	img_clear( $w['buffer'] , $w['wc']['color'] );
+	com_requestWUpdate($compositor, $w, WgetRect($w) );
+	
+//TODO debug
+	//echo("\n\rsize: ".$w['buffer']['w']."x".$w['buffer']['h']);
+//	img_drawLine($w['buffer'], 0,0, $w['buffer']['w'],$w['buffer']['h'], rgb(255,0,0) );
+//	img_drawLine($w['buffer'], $w['buffer']['w'],0, 0,$w['buffer']['h'], rgb(255,0,0) );
 }
 
 ?>

@@ -81,11 +81,14 @@ function wc_keypress_terminal(&$w,$keypress){
 }
 
 function wcf_terminal_drawLine(&$w){
+	GLOBAL $compositor;
 	img_fill($w['buffer'], 0,$w['buffer']['h']-15, $w['buffer']['w'],$w['buffer']['h'], rgb(0,48,0) );
 	img_drawString($w['buffer'], 5, $w['buffer']['h']-15, 15,9999, rgb(0,100,0), substr($w['wc']['string'],-32) );
+	com_requestWUpdate($compositor, $w, [2,$w['buffer']['h']-15+23, $w['buffer']['w'],$w['buffer']['h']] );
 }
 
 function wcf_terminal_drawOutput(&$w){
+	GLOBAL $compositor;
 	img_fill($w['buffer'], 0,0, $w['buffer']['w'],$w['buffer']['h']-15, rgb(0,32,0) );
 
 	$maxlines=($w['buffer']['h']-16)/16;
@@ -97,6 +100,7 @@ function wcf_terminal_drawOutput(&$w){
 			img_drawString($w['buffer'], 5, $y, 15,9999, $line['color'], $line['text'] );
 			$y+=16;
 	}
+	com_requestWUpdate($compositor, $w, [2,23, $w['buffer']['w'],$w['buffer']['h']] );
 }
 
 

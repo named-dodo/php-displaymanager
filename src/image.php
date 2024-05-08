@@ -12,7 +12,7 @@ function img_create($w, $h, $color){
 }
 
 // Fully copy an image
-function img_copy(&$img){
+function img_clone(&$img){
 	return array( 'w'=>$img['w'], 'h'=>$img['h'], 'd'=>$img['d'] );
 }
 
@@ -404,6 +404,14 @@ function img_loadPPM($path){
 	return array( 'w'=>$w, 'h'=>$h, 'd'=>&$d );
 }
 
+// determine the overlap of of 2 ranges.
+function img_findMinBounds($a1, $a2, $b1, $b2){
+	if( $a2<$a1 or $b2<$b1 ) return false; // inverted range
+	if( $b1>$a2 or $a1>$b2 ) return false; // ranges not touching.
+	$c1=max($a1,$b1);
+	$c2=min($a2,$b2);
+	return [$c1,$c2];
+}
 
 
 

@@ -1,11 +1,11 @@
 # The PHP displaymanager project
 
 This project started off as a joke:
-You can't make a display manager in PHP, right?
+You can't make a display server in PHP, right?
 Well, as it turns out, you can!
 
 That is what this project is.
-A display manager (+window manager) inside PHP.
+A display server (+window manager) inside PHP.
 
 
 
@@ -28,12 +28,11 @@ A display manager (+window manager) inside PHP.
 
 ## TODO / Goals
 * [x] Automatic resolution recognision.
-* [x] Flashbang mode (invert colors)
 * [x] Wallpaper support
 * [x] Embedded terminal program.
 * [ ] Clean up and restructure the source code.
-* [ ] Optimize rendering system.
-* [ ] Multi-monitor support.
+* [x] Optimize rendering system.
+* [x] Multi-monitor support.
 * [ ] Finish the X11 protocol implementation.
 * [ ] Wayland server support?
 * [ ] Multiple mouse/cursor support?

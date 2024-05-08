@@ -1,13 +1,10 @@
 <?php /* Manage a window */
 
-$Wbordercolor=rgb(100,100,100);
-$Wheadercolor=rgb(120,120,120);
-
-
 function &Wcreate($x,$y,$w,$h,$title, $wc_name, $wc_data=null){
 	$w = ['x'=>$x, 'y'=>$y, 'w'=>$w, 'h'=>$h, 'title'=>$title,
-					'minimized'=>false, 'maximized'=>false, 'borderless'=>false,
-					'buffer'=>img_create($w-2,$h-22,rgb(0,0,0)), 'wc_name'=>$wc_name  ];
+					'minimized'=>false, 'maximized'=>false, 'decorated'=>true,
+					'buffer'=>img_create($w-4,$h-25,rgb(0,0,0)), 'wc_name'=>$wc_name  ];
+	deco_update($w);
 
 	// register functions for window client.
 	foreach( ['init','destroy','tick','keypress','hover','click'] as $func_action){
@@ -41,56 +38,46 @@ function Wpress(&$w,$keypress){
 
 function WgetX(&$w){ return $w['x']; }
 function WgetY(&$w){ return $w['y']; }
+
 function WsetPosition(&$w,$x,$y){ $w['x']=$x; $w['y']=$y; }
 
 function WgetW(&$w){ return $w['w']; }
 function WgetH(&$w){ return $w['h']; }
+function WgetRect(&$w){ return [0,0,$w['w'],$w['h']];}
 function WsetSize(&$w,$nw,$nh){
 	if($nw<40) $nw=40;
-	if($nh<22) $nh=22;
-	img_setSize($w['buffer'],$nw-2,$nh-22, rgb(0,0,0));
+	if($nh<25) $nh=25;
+	img_setSize($w['buffer'],$nw-4,$nh-25, rgb(0,0,0));
 	$w['w']=$nw; $w['h']=$nh;
+	deco_update($w);
 }
 
 function WsetMinimized(&$w,$bool){ $w['minimized']=$bool; }
 
 function WMaximize(&$w,$x,$y,$wn,$nh){} //TODO later
 function WUnMaximize(&$w){} //TODO later
-function WsetBorderless(&$w,$bool){}//TODO later
 
-
-function WfullDraw(&$window,&$img){
-		GLOBAL $Wbordercolor, $Wheadercolor;
-		if( $window['minimized'] ) return;
-
-		$x=$window['x'];
-		$y=$window['y'];
-		$w=$window['w'];
-		$h=$window['h'];
-
-		img_drawhline($img, $y,      $x, $x+$w-1,$Wbordercolor );
-		img_drawhline($img, $y+20,   $x, $x+$w-1,$Wbordercolor );
-		img_drawhline($img, $y+$h-1, $x, $x+$w-1,$Wbordercolor );
-
-		img_drawvline($img, $x,      $y, $y+$h-1,$Wbordercolor );
-		img_drawvline($img, $x+$w-1, $y, $y+$h-1,$Wbordercolor );
-
-		img_fill($img, $x+1, $y+1 , $x+$w-2, $y+19  , $Wheadercolor );
-
-		$bx=$x+$w-20; $by=$y+1; // close button
-		img_fill($img, $bx, $by, $bx+18, $by+18  , rgb(120,0,0) );
-		img_drawLine($img, $bx+4 , $by+3, $bx+15, $by+14  , rgb(255,50,50) );
-		img_drawLine($img, $bx+15, $by+3, $bx+4 , $by+14  , rgb(255,50,50) );
-
-		$bx=$x+$w-40; $by=$y+1; // minimize button
-		img_fill($img, $bx, $by, $bx+18, $by+18  , rgb(100,100,100) );
-		img_drawLine($img, $bx+2, $by+18, $bx+18 , $by+18  , rgb(200,200,200) );
-
-		// window title
-		img_drawString($img, $x+5, $y+4, 12, $w-52, rgb(0,0,0) ,$window['title']);
-
-		img_paint($img, $x+1, $y+21, $window['buffer'] );
+function WsetDecorated(&$w,$bool){
+	$w['decorated']=$bool;
+	if($bool) deco_update($w);
+	// TODO change everything for when the window is undecorated...
 }
+
+
+// $toff is x/y offset of target surface, $rect is relative to window origin.
+function win_drawSection(&$window, &$target, $toff, $rect){
+	if($window['minimized']) return;
+
+	if($window['decorated']){
+		deco_repaint($window, $target,$toff[0],$toff[1], $rect[0], $rect[1], $rect[2], $rect[3]);
+		img_copy($target, $toff[0]+$rect[0], $toff[1]+$rect[1], $window['buffer'], $rect[0]-2, $rect[1]-23, $rect[2]-2, $rect[3]-23 );
+
+	}else{
+		img_copy($target, $toff[0]+$rect[0], $toff[1]+$rect[1], $window['buffer'], $rect[0], $rect[1], $rect[2], $rect[3] );
+	}
+
+}
+
 
 // returns:  -3=minimize, -2=destroy, -1=outside, 0=inside, 1=titlebar/move, 2=unknown, 3=left, 4=right, 5=top, 6=topleft, 7=topright, 8=bottom, 9=bottomleft, 10=bottomright
 function Wclick(&$w,&$click){

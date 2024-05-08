@@ -23,4 +23,9 @@ function sint($arr, $size=1, $offset=0){
 	return $n;
 }
 
+function debug($message){
+	
+	echo($message."\r\n");
+}
+
 ?>
