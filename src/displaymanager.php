@@ -45,8 +45,8 @@ $tw=0;
 $monitors=list_create();
 
 // Swap these foreach lines if you want to specify the displays yourself.
-//foreach( array_reverse(glob("/dev/fb*")) as $file ){
-foreach( ["/dev/fb1", "/dev/fb0"] as $file ){
+foreach( array_reverse(glob("/dev/fb*")) as $file ){
+//foreach( ["/dev/fb1", "/dev/fb0"] as $file ){
 	$fb=framebuffer_open($file);
 	if($fb===false){ die("Failed opening framebuffer ".$file."!"); }
 	debug("Opening framebuffer $file: ".$fb['w']."x".$fb['h']);
